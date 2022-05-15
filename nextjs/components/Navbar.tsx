@@ -62,7 +62,7 @@ const Navbar = () => {
         <Box bg={useColorModeValue('toolbarSurfaceLight', 'toolbarSurfaceDark')} px={4} as="nav" position="sticky" zIndex={10} top={0} borderBottom="1px" borderBottomColor={useColorModeValue('gray.300', 'gray.700')}>
             <WalletSelectModal isOpen={isOpen} onClose={onClose} onSelectWalletType={onSelectWalletType} />
             <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-                <Text>DApp</Text>
+                <Text>Sovereign Citizen</Text>
 
                 <Flex alignItems={'center'}>
                     <Stack direction={'row'} spacing={7}>

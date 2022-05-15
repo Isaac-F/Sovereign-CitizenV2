@@ -39,6 +39,10 @@ const theme = extendTheme({
   components: {
     Card
   },
+  fonts: {
+    heading: `'Inter', sans-serif`,
+    body: 'Inter, sans-serif'
+  },
   styles: {
     global: ({ colorMode }: { colorMode: ColorMode }) => ({
       body: {
