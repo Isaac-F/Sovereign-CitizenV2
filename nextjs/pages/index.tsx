@@ -23,7 +23,7 @@ const Home: NextPage = () => {
           <Flex direction="column" justify="space-evenly" align="center" bg="blue.400" borderRadius="20px" h="calc(95vh)" maxW="calc(90vw)" w="calc(28vw)">
             <Flex direction="column" align="center">
               <Image src="./SovCit.png" boxSize="200px"></Image>
-              <Text fontFamily="'Inter', sans-serif" fontSize="5xl" textAlign="center">sovereign citizen</Text>
+              <Text fontFamily="'Inter', sans-serif" fontSize="30pt" textAlign="center">sovereign citizen</Text>
             </Flex>
             <Button width="40%" size="lg" borderRadius="5px" bg="orange.400" fontWeight="500" _hover={{bg:"orange.600"}}>
               {connectionStatus === CONNECTION_STATUS.CONNECTED && connectedAccount ? `Launch` : `Connect Wallet`}
