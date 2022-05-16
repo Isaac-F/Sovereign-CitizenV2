@@ -46,7 +46,8 @@ const theme = extendTheme({
   styles: {
     global: ({ colorMode }: { colorMode: ColorMode }) => ({
       body: {
-        bg: colorMode === 'light' ? "gray.100" : "gray.900"
+        bg: colorMode === 'light' ? "gray.100" : "gray.900",
+        overflow: 'hidden'
       }
     })
   }

@@ -11,6 +11,10 @@ import { Center, Flex, Image, Text, Button } from "@chakra-ui/react"
 
 const Idens: NextPage = () => {
 
+    // Obviously, these are going to need to get fetched off ETH somehow
+    // XXX: replace with DID method
+    let citizens = ["John Smith", "Jane Applebee", "Count Dracula", "Frankenstein"];
+
     return (
         <>
             <Head>
@@ -20,14 +24,17 @@ const Idens: NextPage = () => {
             </Head>
             <PageContainer>
                 <Center>
-                    <Flex direction="column" align="center" bg="linear-gradient(180deg, #6FB1FC 0%, #4364F7 50.52%, #0052D4 100%)" borderRadius="20px" h="calc(95vh)" maxW="calc(90vw)" w="calc(28vw)">
+                    <Flex direction="column" align="center" bg="linear-gradient(180deg, #6FB1FC 0%, #4364F7 50.52%, #0052D4 100%)" borderRadius="20px" h="calc(95vh)" maxW="calc(90vw)" w="calc(28vw)" overflowY="scroll">
                         <SovCitHeader/>
                         <Flex w="85%" direction="column" mt="5%">
                             <Text fontSize="4xl">Welcome back</Text>
-                            <Text fontSize="14pt">You have <b>n Citizens</b></Text>
-                            <IdentityPrev name="John Smith" />
-                            <IdentityPrev name="Someone else" />
-                            <Button w="50%" colorScheme="teal" mt="15px">New Identity</Button>
+                            <Text fontSize="14pt">You have <b>{citizens.length} Citizens</b></Text>
+                            {
+                                citizens.map((name, index) => {
+                                    return <IdentityPrev name={name} id={index}/>
+                                })
+                            }
+                            <Button w="50%" colorScheme="teal" mt="15px" mb="15px">New Identity</Button>
                         </Flex>
                     </Flex>
                 </Center>
