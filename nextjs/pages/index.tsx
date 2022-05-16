@@ -20,7 +20,7 @@ const Home: NextPage = () => {
       </Head>
       <PageContainer>
         <Center>
-          <Flex direction="column" justify="space-evenly" align="center" bg="blue.400" borderRadius="20px" h="calc(95vh)" maxW="calc(90vw)" w="calc(28vw)">
+          <Flex direction="column" justify="space-evenly" align="center" bg="linear-gradient(180deg, #6FB1FC 0%, #4364F7 50.52%, #0052D4 100%)" borderRadius="20px" h="calc(95vh)" maxW="calc(90vw)" w="calc(28vw)">
             <Flex direction="column" align="center">
               <Image src="./SovCit.png" boxSize="200px"></Image>
               <Text fontFamily="'Inter', sans-serif" fontSize="30pt" textAlign="center">sovereign citizen</Text>
