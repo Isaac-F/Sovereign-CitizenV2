@@ -1,5 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import PageContainer from '../components/PageContainer'
 
 import { CONNECTION_STATUS, useDappStatus } from '../core/ethereum'
@@ -9,6 +10,7 @@ import { Flex, Button, Center, Image, Text } from "@chakra-ui/react"
 const Home: NextPage = () => {
 
   const { connectionStatus, connectedAccount } = useDappStatus()
+  const router = useRouter()
 
   return (
     <>
@@ -25,9 +27,15 @@ const Home: NextPage = () => {
               <Image src="./SovCit.png" boxSize="200px"></Image>
               <Text fontFamily="'Inter', sans-serif" fontSize="30pt" textAlign="center">sovereign citizen</Text>
             </Flex>
-            <Button width="40%" size="lg" borderRadius="5px" bg="orange.400" fontWeight="500" _hover={{bg:"orange.600"}}>
-              {connectionStatus === CONNECTION_STATUS.CONNECTED && connectedAccount ? `Launch` : `Connect Wallet`}
-            </Button>
+            { connectionStatus === CONNECTION_STATUS.CONNECTED && connectedAccount ?
+              (<Button width="40%" size="lg" borderRadius="5px" bg="orange.400" fontWeight="500" _hover={{bg:"orange.600"}} onClick={() => router.push("identities")}>
+                Launch
+              </Button>) :
+              // XXX: Add hook to connect to metamask
+              (<Button width="40%" size="lg" borderRadius="5px" bg="orange.400" fontWeight="500" _hover={{bg:"orange.600"}}>
+                Connect Wallet
+              </Button>)
+            }
           </Flex>
         </Center>
       </PageContainer>
