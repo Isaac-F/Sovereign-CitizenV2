@@ -1,4 +1,6 @@
 import type {NextPage} from "next"
+import { useEffect } from "react"
+import { useRouter } from "next/router"
 import Head from "next/head"
 
 import PageContainer from '../components/PageContainer'
@@ -8,12 +10,23 @@ import IdentityPrev from "../components/IdentityPrev"
 // import { CONNECTION_STATUS, useDappStatus } from '../core/ethereum'
 
 import { Center, Flex, Image, Text, Button } from "@chakra-ui/react"
+import { CONNECTION_STATUS, useDappStatus } from "../core/ethereum"
 
 const Idens: NextPage = () => {
+
+    const { connectionStatus, connectedAccount } = useDappStatus()
 
     // Obviously, these are going to need to get fetched off ETH somehow
     // XXX: replace with DID method
     let citizens = ["John Smith", "Jane Applebee", "Count Dracula", "Frankenstein"];
+    const router = useRouter()
+
+    // Check if you're connected to MetaMask - if not, get out of here
+    useEffect(() => {
+        if (connectionStatus !== CONNECTION_STATUS.CONNECTED) {
+            router.push("/");
+        }
+    })
 
     return (
         <>
