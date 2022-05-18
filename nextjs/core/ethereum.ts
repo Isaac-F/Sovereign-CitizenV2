@@ -1,13 +1,15 @@
 import { Greeter as GreeterContract } from './../../typechain/Greeter.d';
+import { Did as DidContract } from './../../typechain/Did.d';
 import { AVAX_TEST_CHAIN_CONFIG, CHAIN, getChainConfig, LOCAL_CHAIN_CONFIG } from './../config/chains';
 import detectEthereumProvider from '@metamask/detect-provider';
 import { MetaMaskInpageProvider } from "@metamask/providers";
 import { ethers, Contract } from 'ethers';
 import Greeter from "../resources/hardhat/artifacts/contracts/Greeter.sol/Greeter.json";
+import Did from "../resources/hardhat/artifacts/contracts/Did.sol/Did.json";
 import DeployedMetadata from "../resources/hardhat/deployedMeta.json"
 import { useEffect, useState } from 'react';
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import Cookie from 'js-cookie'
+import Cookie from 'js-cookie';
 import { singletonHook } from 'react-singleton-hook';
 
 export const getProcessEnvChain = (): CHAIN => {
@@ -326,6 +328,7 @@ interface DappAPIs {
     isViewOnly: boolean,
     signer: ethers.providers.JsonRpcSigner | undefined,
     greeter: GreeterContract,
+    did: DidContract,
 }
 const getDappAPI = (dAppProvider: DAppProvider) => {
     const isViewOnly = dAppProvider.type === PROVIDER_TYPE.DEFAULT
@@ -342,10 +345,16 @@ const getDappAPI = (dAppProvider: DAppProvider) => {
             dAppProvider.providerOrSigner
         ) as unknown as GreeterContract
 
+        const did = new Contract(
+            (DeployedMetadata.Did as any)[chain].address,
+            Did.abi,
+            dAppProvider.providerOrSigner
+        ) as unknown as DidContract
+
         return {
             isViewOnly: isViewOnly,
             signer: isViewOnly ? undefined : dAppProvider.providerOrSigner as ethers.providers.JsonRpcSigner,
-            greeter
+            greeter, did
         }
     } catch (e: any) {
         console.error(e)
