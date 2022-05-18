@@ -3,13 +3,13 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import PageContainer from '../components/PageContainer'
 
-import { CONNECTION_STATUS, useDappStatus } from '../core/ethereum'
+import { CONNECTION_STATUS, useDappStatus, WALLET_TYPE } from '../core/ethereum'
 
-import { Flex, Button, Center, Image, Text } from "@chakra-ui/react"
+import { Flex, Button, Center, Image, Text, useDisclosure } from "@chakra-ui/react"
 
 const Home: NextPage = () => {
 
-  const { connectionStatus, connectedAccount } = useDappStatus()
+  const { connectionStatus, connectedAccount, requestConnectWallet } = useDappStatus()
   const router = useRouter()
 
   return (
@@ -32,7 +32,7 @@ const Home: NextPage = () => {
                 Launch
               </Button>) :
               // XXX: Add hook to connect to metamask
-              (<Button width="40%" size="lg" borderRadius="5px" bg="orange.400" fontWeight="500" _hover={{bg:"orange.600"}}>
+              (<Button width="40%" size="lg" borderRadius="5px" bg="orange.400" fontWeight="500" _hover={{bg:"orange.600"}} onClick={() => {requestConnectWallet(WALLET_TYPE.METAMASK)}}>
                 Connect Wallet
               </Button>)
             }
