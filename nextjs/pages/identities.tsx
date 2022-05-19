@@ -27,6 +27,12 @@ import {
 } from "@chakra-ui/react"
 import { UseVisualState } from "framer-motion/types/motion/utils/use-visual-state"
 
+const EP = (name:String, url:String) => {
+    return {
+        name, url
+    }
+}
+
 const Idens: NextPage = () => {
 
     const { connectionStatus, connectedAccount } = useDappStatus()
@@ -38,7 +44,7 @@ const Idens: NextPage = () => {
 
     // Obviously, these are going to need to get fetched off ETH somehow
     // XXX: replace with DID method
-    let [endpoints, setEndpoints] = useState(["work", "email", "social media"])
+    let [endpoints, setEndpoints] = useState([EP("email", "email.com/login")])
     const router = useRouter()
 
     // Check if you're connected to MetaMask - if not, get out of here
@@ -50,12 +56,22 @@ const Idens: NextPage = () => {
 
     const newEndpoint = () => {
         // Do something with name and url here
-        setEndpoints([...endpoints, name])
+
+        ///XXX: Modify DID
+        setEndpoints([...endpoints, EP(name, url)])
 
         // Reset and close for reuse
         setName('')
         setUrl('')
         end.onClose()
+    }
+
+    const removeEndpoint = (name:String) => {
+        // Called when endpoint is deleted
+
+        // XXX: Blank relevant DID values
+
+        setEndpoints(endpoints.filter(point => point.name!==name))
     }
 
     return (
@@ -74,11 +90,11 @@ const Idens: NextPage = () => {
                             <Text fontSize="14pt">you have <b>{endpoints.length} {endpoints.length == 1 ? "endpoint" : "endpoints"}</b></Text>
                             <Flex justify="space-around">
                                 <Button w="45%" colorScheme="teal" mt="15px" mb="15px" fontWeight="500" onClick={end.onOpen}>add endpoint</Button>
-                                <Button w="45%" colorScheme="teal" mt="15px" mb="15px" fontWeight="500">modify key</Button>
+                                <Button w="45%" colorScheme="teal" mt="15px" mb="15px" fontWeight="500" onClick={key.onOpen}>modify key</Button>
                             </Flex>
                             {
-                                endpoints.map((name) => {
-                                    return <IdentityPrev name={name} url={"domain.com/someURL"}/>
+                                endpoints.map((point) => {
+                                    return <IdentityPrev name={point.name} url={point.url} onRemove={() => removeEndpoint(point.name)}/>
                                 })
                             }
                         </Flex>
@@ -97,6 +113,20 @@ const Idens: NextPage = () => {
                                     <Button type="submit" onClick={newEndpoint}>Save</Button>
                                 </ModalFooter>
                             </ModalContent>
+                    </Modal>
+
+                    <Modal isOpen={key.isOpen} onClose={key.onClose}>
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalCloseButton />
+                            <ModalHeader>change key</ModalHeader>
+                            <ModalBody>
+
+                            </ModalBody>
+                            <ModalFooter>
+                                
+                            </ModalFooter>
+                        </ModalContent>
                     </Modal>
                 </Center>
             </PageContainer>
