@@ -49,24 +49,18 @@ const Playground = () => {
 
   }
 
-  const makeResolver = async () => {
-    const provider = new Web3Provider((window as any).ethereum);
-    const chainNameOrId = (await provider.getNetwork()).chainId
-    const didResolver = new Resolver(getResolver({ name: "Localhost 8545", chainId: chainNameOrId, rpcUrl: "http://localhost:8545", registry: "0xd2c9e64f495e8d39f64dbe2b1010e46b81dc39be"  }));
-    return didResolver
-  }
-
-  const didResolver = makeResolver()
-
   const makeDID = async () => {
     const keypair = EthrDID.createKeyPair()
     const provider = new Web3Provider((window as any).ethereum);
     const chainNameOrId = (await provider.getNetwork()).chainId
     const accounts = await provider.listAccounts()
     
+    const didResolver = new Resolver(getResolver({ name: "Localhost 8545", chainId: chainNameOrId, rpcUrl: "http://localhost:8545", registry: "0xd2c9e64f495e8d39f64dbe2b1010e46b81dc39be"  }));
+    
     const ethrDid = new EthrDID({identifier: accounts[0], provider, chainNameOrId})
 
     const rpcUrl = "https://localhost:8545";
+    
     //const providerConfig = { name: "Localhost 8545", chainId: chainNameOrId, rpcUrl: "http://localhost:8545", registry: "0x4a487188328194453ef2aAD68CE263EafE5b0724" }
 
     
@@ -75,21 +69,22 @@ const Playground = () => {
 
     // You can also use ES7 async/await syntax
     //const doc = await didResolver.resolve(ethrDid.did)
-
-    
-    
   
-    const tx = await dappAPI?.did.setAttribute(ethrDid.address, ethers.utils.formatBytes32String('did/svc/Test'), ethers.utils.toUtf8Bytes('http://endpoint3.com/1234-1234-1234'), 31104000)
+    //const tx = await dappAPI?.did.setAttribute(ethrDid.address, ethers.utils.formatBytes32String('did/svc/Test'), ethers.utils.toUtf8Bytes('http://endpoint3.com/1234-1234-1234'), 31104000)
+    //await tx?.wait()
+    const tx = await dappAPI?.did.setAttribute(ethrDid.address, ethers.utils.formatBytes32String('did/pub/Ed25519/verikey/hex'), ethers.utils.toUtf8Bytes("0x11060Ecc43D7775F9fDC8E38dc37fBBAFfDE6DBE"), 31104000)
     await tx?.wait()
     const didDocument = (await (await didResolver).resolve(ethrDid.did)).didDocument
+
+    //const t2 = await dappAPI?.did.changeOwner(ethrDid.address, "0x018e551a89e3a30d41920e24525ff15facd52bd8")
     
 
     //const temp = await dappAPI?.did.identityOwner(accounts[0])
 
     //const ethrDIDString = temp
     var ethrDIDString = "id: " + didDocument?.id
-    didDocument?.service?.map(service => {
-      ethrDIDString += "Service: " + service.serviceEndpoint
+    didDocument?.verificationMethod?.map(service => {
+      ethrDIDString += "  Service: " + service.publicKeyHex
     });
     //const ethrDIDString = "id: " + didDocument?.id + ' service: ' + didDocument?.service[2].serviceEndpoint +  ' verificationMethod: ' + didDocument?.verificationMethod + ' publicKey: ' + didDocument?.publicKey
     //await ethrDid.setAttribute('controller', 'something', 10)
@@ -100,6 +95,7 @@ const Playground = () => {
     
     setDID(ethrDIDString)
   } 
+  
 
 
   return (
@@ -124,6 +120,7 @@ const Playground = () => {
               isLoading={setGreetingLoading}
               disabled={dappAPI.isViewOnly}
               >
+              
                 Set Greeting
               </Button>
               
@@ -131,6 +128,7 @@ const Playground = () => {
 			        <Button mt={3} onClick={makeDID}>
 			        Make DID
 			        </Button> 
+              
             </Flex>
           </PlaygroundCard>
         </Wrap>

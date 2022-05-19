@@ -6,6 +6,7 @@ import Head from "next/head"
 import PageContainer from '../components/PageContainer'
 import SovCitHeader from '../components/SovCitHeader'
 import IdentityPrev from "../components/IdentityPrev"
+import KeyPrev from "../components/KeyPrev"
 
 import { EthrDID } from 'ethr-did'
 import { Web3Provider } from '@ethersproject/providers'
@@ -29,7 +30,9 @@ import {
     Input,
     ModalCloseButton,
     ModalHeader,
-    useDisclosure
+    useDisclosure,
+    Select,
+    systemProps
 } from "@chakra-ui/react"
 import { UseVisualState } from "framer-motion/types/motion/utils/use-visual-state"
 
@@ -50,6 +53,12 @@ const Idens: NextPage = () => {
 
     const [name, setName] = useState('')
     const [url, setUrl] = useState('')
+
+    const [newKey, setNewKey] = useState('')
+    const [newKeyType, setNewKeyType] = useState('')
+    const [newKeyVeriType, setNewKeyVeriType] = useState('')
+    
+    const [keys, setKeys] = useState({}) 
 
     // Our did string
     const [DID, setDID] = useState<string | undefined>(undefined) 
@@ -80,18 +89,29 @@ const Idens: NextPage = () => {
         setethrDid(ethrDid)
 
         let didDocument = (await (await didResolver).resolve(ethrDid.did)).didDocument
-        
+        setendPoints({})
         let services = didDocument?.service
+        let notkeys = didDocument?.verificationMethod
         if (services == undefined) {
             services = []
         }   
-        
+        if (notkeys == undefined) {
+            notkeys = []
+        }   
+        notkeys.map(key => {
+            setKeys(prevState => ({
+                ...prevState,
+                [key.type]: ''
+            }));
+        });
         services.map(service => {
             setendPoints(prevState => ({
                 ...prevState,
                 [service.id]: [service.serviceEndpoint, service.type]
             }));
         });
+
+        //didDocument?.authentication?.
     }
 
     // Check if you're connected to MetaMask - if not, get out of here
@@ -109,28 +129,39 @@ const Idens: NextPage = () => {
      },[]);
 
     const newEndpoint = async () => {
-        // Do something with name and url here
-
-        ///XXX: Modify DID
-        //setEndpoints([...endpoints, EP(name, url)])
-
-
-        // Reset and close for reuse
-        
+        ///XXX: Modify DID to add new endpoint
         const tx = await dappAPI?.did.setAttribute(ethrDid.address, ethers.utils.formatBytes32String('did/svc/' + name), ethers.utils.toUtf8Bytes(url), 31104000)
         await tx?.wait()
         
+        // Reset and close for reuse
         setName('')
         setUrl('')
         end.onClose()
     }
 
-    const removeEndpoint = (name:String) => {
+    const addNewKey = async () => {
+        ///XXX: Modify DID to add new key
+        console.log(document.getElementById("keytype"))
+        console.log(document.getElementById("keytype"))
+        const tx = await dappAPI?.did.setAttribute(ethrDid.address, ethers.utils.formatBytes32String('did/pub/' + document.getElementById("keytype").value + '/' + document.getElementById("keytype").value + '/hex'), ethers.utils.toUtf8Bytes(newKey), 31104000)
+        await tx?.wait()
+        
+        // Reset and close for reuse
+        setNewKey('')
+        setNewKeyVeriType('Secp256k1')
+        key.onClose()
+    }
+
+    const removeEndpoint = async (removeName:String, removeurl:string) => {
         // Called when endpoint is deleted
-
+        const tx = await dappAPI?.did.revokeAttribute(ethrDid.address, ethers.utils.formatBytes32String('did/svc/' + removeName), ethers.utils.toUtf8Bytes(removeurl))
+        await tx?.wait()
         // XXX: Blank relevant DID values
+    }
 
-        //setEndpoints(endpoints.filter(point => point.name!==name))
+    const removeKey = async () => {
+        // Called when endpoint is deleted
+        // XXX: Blank relevant DID values
     }
 
     return (
@@ -146,45 +177,61 @@ const Idens: NextPage = () => {
                         <SovCitHeader />
                         <Flex w="85%" direction="column" mt="5%">
                             <Text fontSize="4xl">Welcome back</Text>
-                            <Text fontSize="14pt">You have <b>{Object.entries(endPoints).length} {Object.entries(endPoints).length == 1 ? "endpoint" : "endpoints"}</b></Text>
+                            
                             <Flex justify="space-around">
                                 <Button w="45%" colorScheme="teal" mt="15px" mb="15px" fontWeight="500" onClick={end.onOpen}>Add Endpoint</Button>
                                 <Button w="45%" colorScheme="teal" mt="15px" mb="15px" fontWeight="500" onClick={key.onOpen}>Modify Key</Button>
                             </Flex>
+                            <Text fontSize="14pt">You have <b>{Object.entries(endPoints).length} {Object.entries(endPoints).length == 1 ? "endpoint" : "endpoints"}</b></Text>
                             {
                                 Object.entries(endPoints).map(([key, value]) => {
-                                    return <IdentityPrev name={value[1]} url={value[0]} onRemove={() => removeEndpoint(value[1])} id={key} />
+                                    return <IdentityPrev name={value[1]} url={value[0]} onRemove={() => removeEndpoint(value[1], value[0])} id={key} />
+                                })
+                            }
+                            <Text fontSize="14pt">You have <b>{Object.entries(keys).length} {Object.entries(keys).length == 1 ? "key" : "keys"}</b></Text>
+                            {
+                                Object.entries(keys).map(([key, value]) => {
+                                    return <KeyPrev name={key} onRemove={() => removeKey() } />
                                 })
                             }
                         </Flex>
                     </Flex>
 
                     <Modal isOpen={end.isOpen} onClose={end.onClose}>
-                            <ModalOverlay />
-                            <ModalContent>
-                                <ModalCloseButton/>
-                                <ModalHeader>add endpoint</ModalHeader>
-                                <ModalBody>
-                                    <Input placeholder="name" mb="15px" id="newEndName" onChange={e => setName(e.currentTarget.value)}></Input>
-                                    <Input placeholder="url" id="newEndURL" onChange={e => setUrl(e.currentTarget.value)}></Input>
-                                </ModalBody>
-                                <ModalFooter>
-                                    <Button type="submit" onClick={newEndpoint}>Save</Button>
-                                </ModalFooter>
-                            </ModalContent>
+                        <ModalOverlay />
+                        <ModalContent>
+                            <ModalCloseButton/>
+                            <ModalHeader>Add Endpoint</ModalHeader>
+                            <ModalBody>
+                                <Input placeholder="name" mb="15px" id="newEndName" onChange={e => setName(e.currentTarget.value)}></Input>
+                                <Input placeholder="url" id="newEndURL" onChange={e => setUrl(e.currentTarget.value)}></Input>
+                            </ModalBody>
+                            <ModalFooter>
+                                <Button type="submit" onClick={newEndpoint}>Save</Button>
+                            </ModalFooter>
+                        </ModalContent>
                     </Modal>
 
                     <Modal isOpen={key.isOpen} onClose={key.onClose}>
                         <ModalOverlay />
                         <ModalContent>
                             <ModalCloseButton />
-                            <ModalHeader>change key</ModalHeader>
+                            <ModalHeader>Change Key</ModalHeader>
                             <ModalBody>
-
+                                <Input placeholder="Key (hex)" mb="15px" id="newKey" onChange={e => setNewKey(e.currentTarget.value)}></Input>
+                                <Select name="Key Type" id="keytype" onChange={e => setNewKeyType(e.currentTarget.value)}>
+                                    <option value="Secp256k1">Secp256k1</option>
+                                    <option value="Rsa">Rsa</option>
+                                    <option value="Ed25519">Ed25519</option>
+                                </Select>
+                                <Select name="Verification Method" id="keyveri" onChange={d => setNewKeyVeriType(d.currentTarget.value)}>
+                                    <option value="veriKey">veriKey</option>
+                                    <option value="sigAuth">sigAuth</option>
+                                </Select>
                             </ModalBody>
                             <ModalFooter>
-                                
-                            </ModalFooter>
+                                    <Button type="submit" onClick={addNewKey}>Save</Button>
+                                </ModalFooter>
                         </ModalContent>
                     </Modal>
                 </Center>
