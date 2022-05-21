@@ -1,4 +1,4 @@
-# DApp Stack Template
+# Sovereign Citizen
 The following project is designed to make bootstrapping EVM-based decentralized web applications as painless as possible. This project has the following stack:
 * **Smart Contract Dev Framework:** Hardhat
 * **Web Framework:** NextJS (TypeScript)
@@ -7,29 +7,27 @@ The following project is designed to make bootstrapping EVM-based decentralized 
 # Set Up / Configure
 Install packages from root dir and within `nextjs` via `npm install`
 
-To run any hardhat processes, a mnenomic seed must be provided in your `.env` file. Create a `.env` file in the root directory with the following contents:
-```
-MNEMONIC=<12-24 word mnemonic seed phrase>
-```
-
-For the sake of this guide, you should install hardhat shorthand:
+For the sake of this project, you should install hardhat shorthand:
 ```
 npm i -g hardhat-shorthand
 ```
 
-To configure your desired deployment chains, update the `NEXT_PUBLIC_CHAIN_ID` variable within `.env.development` and `.env.production`. They are currently configured for localhost in development (i.e. via `npm run dev`) and avax testnet in production (i.e. via `npm start`).
+Use the command below in the folder `nextjs` to start the app on the local host:
+```
+npm run dev
+```
+
+Keep in mind that a Metamask account is required for the use of the app and functionality will not work without the smart contract deployed.
+
 
 # Work Flow Guide
 ## Smart Contract Development
 The root of the project follows a standard hardhat file structure:
-* `contracts`: Your Solidity smart contracts
+* `contracts`: Solidity smart contracts
 * `scripts`: Scripts to run against your smart contracts or to deploy your smart contracts
 * `typechain`: The generated types for your smart contracts
 * `test`: Chai testing suite 
 * `hardhat.config.ts`: Hardhat configuration file - can add new networks in here
-
-### Contracts
-First create your smart contracts within the `contracts` directory. An example `Greeter.sol` is provided. You can compile all contracts within `contracts` by running `hh compile` from the root. This will generate the typechain typing.
 
 ### Local Deployment
 Hardhat allows you to run a localhost EVM chain which you can deploy your contracts to for testing. To run the EVM chain, execute `hh node` in a seperate terminal.
@@ -39,12 +37,7 @@ Next to deploy your smart contracts, run the `deploy.ts` script targetting the `
 hh run --network localhost scripts/deploy.ts
 ```
 
-Currently this script is set to just deploy the `Greeter.sol` contract. To deploy your other contracts, you'll need to add them into the `deploy.ts` script - just follow the pattern seen for `Greeter`.
-
-The `deploy.ts` script will also update a JSON metadata file within the `nextjs` project with information about the deployed contracts. This occurs during:
-```js
-updateDeployedContractData("Greeter", chainId, greeter.address)
-```
+If you get an issue with running the command above, try downgrading the node.js version to the latest LTV.
 
 For each contract you deploy, you should run this function to ensure the frontend has the most recently instance of your contracts.
 
@@ -71,8 +64,8 @@ The `useDappStatus` hook provides the following:
 
 As you create new contracts, you should add them as a property to `dappAPI` copying the pattern in which it is done for the `dappAPI.greeter` property.
 
-### Playground
-A useful way to test smart contract interactions is through a dedicated playground/sandbox environment. One has been set up under `nextjs/pages/playground/..`. Following the same pattern as the existing `PlaygroundCard`, you can add additional cards to test and interact with your new contracts (which you should have added to the `dappAPI` object, see above ^).
+### Identites.tsx
+This file in the /nextjs/pages folder is the main page for the app. This page contains the functions used to communicate with the smart contract.
 
-### Navbar
-A default navbar has been created within `nextjs/components/Navbar.tsx`. This navbar uses the `useDappStatus` hook to respond to connection and chain status changes. It also shows how the hook can be used to request connection and request chain switches.
+### DID Contract
+The file Did.sol in the /contracts folder is the DID smart contract used for the app. This, along with the code for generating DIDs and their DID documents, were obtaiend from the uport-project/ethr-did project https://github.com/uport-project/ethr-did.
